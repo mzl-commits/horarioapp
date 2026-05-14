@@ -1,4 +1,7 @@
 package com.example.horarioapp
 
-class HorarioApplication {
-}
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
+
+@HiltAndroidApp
+class HorarioApplication : Application()

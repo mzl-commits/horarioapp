@@ -1,4 +1,13 @@
 package com.example.horarioapp.domain.usecase.auth
 
-class LogoutUseCase {
+
+import com.example.horarioapp.domain.repository.AuthRepository
+import javax.inject.Inject
+
+class LogoutUseCase @Inject constructor(
+    private val authRepository: AuthRepository
+) {
+    suspend operator fun invoke(): Result<Unit> {
+        return authRepository.logout()
+    }
 }
