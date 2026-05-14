@@ -10,6 +10,8 @@ import com.example.horarioapp.presentation.home.HomeScreen
 
 import com.example.horarioapp.presentation.calendar.CalendarScreen
 
+import com.example.horarioapp.presentation.profile.ProfileScreen
+
 @Composable
 fun AppNavGraph(
     navController: NavHostController = rememberNavController()
@@ -32,6 +34,9 @@ fun AppNavGraph(
         }
         composable(Routes.Calendar.route) {
             CalendarScreen(navController = navController)
+        }
+        composable(Routes.Profile.route) {
+            ProfileScreen(navController = navController)
         }
     }
 }

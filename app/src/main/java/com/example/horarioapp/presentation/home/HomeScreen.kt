@@ -25,40 +25,12 @@ import com.example.horarioapp.core.navigation.Routes
 import com.example.horarioapp.core.ui.components.BrandDarkBlue
 import com.example.horarioapp.core.ui.components.BrandOrange
 
+import com.example.horarioapp.core.navigation.AppBottomNavigation
+
 @Composable
 fun HomeScreen(navController: NavHostController) {
     Scaffold(
-        bottomBar = {
-            NavigationBar(containerColor = Color.White) {
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                    label = { Text("Inicio") },
-                    selected = true,
-                    onClick = { },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = BrandOrange,
-                        selectedTextColor = BrandOrange,
-                        indicatorColor = Color.Transparent
-                    )
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.DateRange, contentDescription = null) },
-                    label = { Text("Horario") },
-                    selected = false,
-                    onClick = { 
-                        navController.navigate(Routes.Calendar.route) {
-                            popUpTo(Routes.Home.route) { inclusive = false }
-                        }
-                    }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = null) },
-                    label = { Text("Perfil") },
-                    selected = false,
-                    onClick = { }
-                )
-            }
-        }
+        bottomBar = { AppBottomNavigation(navController) }
     ) { innerPadding ->
         Box(
             modifier = Modifier

@@ -24,41 +24,15 @@ import androidx.navigation.NavHostController
 import com.example.horarioapp.core.navigation.Routes
 import com.example.horarioapp.core.ui.components.BrandDarkBlue
 import com.example.horarioapp.core.ui.components.BrandOrange
+import com.example.horarioapp.presentation.calendar.component.CalendarGrid
+import com.example.horarioapp.presentation.calendar.component.ScheduleCard
+
+import com.example.horarioapp.core.navigation.AppBottomNavigation
 
 @Composable
 fun CalendarScreen(navController: NavHostController) {
     Scaffold(
-        bottomBar = {
-            NavigationBar(containerColor = Color.White) {
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                    label = { Text("Inicio") },
-                    selected = false,
-                    onClick = { 
-                        navController.navigate(Routes.Home.route) {
-                            popUpTo(Routes.Home.route) { inclusive = true }
-                        }
-                    }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.DateRange, contentDescription = null) },
-                    label = { Text("Horario") },
-                    selected = true,
-                    onClick = { },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = BrandOrange,
-                        selectedTextColor = BrandOrange,
-                        indicatorColor = Color.Transparent
-                    )
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = null) },
-                    label = { Text("Perfil") },
-                    selected = false,
-                    onClick = { }
-                )
-            }
-        }
+        bottomBar = { AppBottomNavigation(navController) }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -89,19 +63,7 @@ fun CalendarScreen(navController: NavHostController) {
             }
 
             // Days of the week row
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                DayItem("Lun", "12", false)
-                DayItem("Mar", "13", false)
-                DayItem("Mié", "14", true)
-                DayItem("Jue", "15", false)
-                DayItem("Vie", "16", false)
-                DayItem("Sáb", "17", false)
-            }
+            CalendarGrid()
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -148,76 +110,6 @@ fun CalendarScreen(navController: NavHostController) {
                     )
                 }
                 item { Spacer(modifier = Modifier.height(32.dp)) }
-            }
-        }
-    }
-}
-
-@Composable
-fun DayItem(dayName: String, dayNumber: String, isSelected: Boolean) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(if (isSelected) BrandDarkBlue else Color.Transparent)
-            .padding(horizontal = 12.dp, vertical = 8.dp)
-            .clickable { }
-    ) {
-        Text(
-            text = dayName,
-            color = if (isSelected) Color.White else Color.Gray,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = dayNumber,
-            color = if (isSelected) Color.White else Color.Black,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-@Composable
-fun ScheduleCard(time: String, title: String, subtitle: String, color: Color, indicatorColor: Color) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
-        verticalAlignment = Alignment.Top
-    ) {
-        Text(
-            text = time,
-            color = Color.Gray,
-            fontSize = 14.sp,
-            modifier = Modifier
-                .width(48.dp)
-                .padding(top = 8.dp)
-        )
-        
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            shape = RoundedCornerShape(16.dp),
-            color = color
-        ) {
-            Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-                // Colored left border indicator
-                Box(
-                    modifier = Modifier
-                        .width(6.dp)
-                        .fillMaxHeight()
-                        .background(indicatorColor)
-                )
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(text = title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Black)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = subtitle, color = Color.DarkGray, fontSize = 14.sp)
-                }
             }
         }
     }
