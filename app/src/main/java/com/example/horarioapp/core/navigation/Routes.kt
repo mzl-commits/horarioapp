@@ -6,4 +6,5 @@ sealed class Routes(val route: String) {
     object Home : Routes("home")
     object Calendar : Routes("calendar")
     object Profile : Routes("profile")
+    object AddSchedule : Routes("add_schedule")
 }

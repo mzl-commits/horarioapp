@@ -14,13 +14,21 @@ object FirebaseModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseAuth(): FirebaseAuth {
-        return FirebaseAuth.getInstance()
+    fun provideFirebaseAuth(): FirebaseAuth? {
+        return try {
+            FirebaseAuth.getInstance()
+        } catch (e: Exception) {
+            null
+        }
     }
 
     @Singleton
     @Provides
-    fun provideFirebaseFirestore(): FirebaseFirestore {
-        return FirebaseFirestore.getInstance()
+    fun provideFirebaseFirestore(): FirebaseFirestore? {
+        return try {
+            FirebaseFirestore.getInstance()
+        } catch (e: Exception) {
+            null
+        }
     }
 }

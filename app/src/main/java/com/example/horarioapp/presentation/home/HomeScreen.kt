@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.horarioapp.core.navigation.Routes
-import com.example.horarioapp.core.ui.components.BrandDarkBlue
-import com.example.horarioapp.core.ui.components.BrandOrange
+import com.example.horarioapp.core.ui.theme.BrandDarkBlue
+import com.example.horarioapp.core.ui.theme.BrandOrange
 
 import com.example.horarioapp.core.navigation.AppBottomNavigation
 

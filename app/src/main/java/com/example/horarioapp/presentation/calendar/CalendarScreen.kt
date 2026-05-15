@@ -22,15 +22,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.horarioapp.core.navigation.Routes
-import com.example.horarioapp.core.ui.components.BrandDarkBlue
-import com.example.horarioapp.core.ui.components.BrandOrange
+import com.example.horarioapp.core.ui.theme.BrandDarkBlue
+import com.example.horarioapp.core.ui.theme.BrandOrange
 import com.example.horarioapp.presentation.calendar.component.CalendarGrid
 import com.example.horarioapp.presentation.calendar.component.ScheduleCard
 
 import com.example.horarioapp.core.navigation.AppBottomNavigation
 
 @Composable
-fun CalendarScreen(navController: NavHostController) {
+fun CalendarScreen(
+    navController: NavHostController,
+    onNavigateToAddSchedule: () -> Unit = {}
+) {
     Scaffold(
         bottomBar = { AppBottomNavigation(navController) }
     ) { innerPadding ->
@@ -53,7 +56,7 @@ fun CalendarScreen(navController: NavHostController) {
                     Text(text = "Horario semanal", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 }
                 IconButton(
-                    onClick = { },
+                    onClick = onNavigateToAddSchedule,
                     modifier = Modifier
                         .background(BrandOrange, shape = CircleShape)
                         .size(48.dp)

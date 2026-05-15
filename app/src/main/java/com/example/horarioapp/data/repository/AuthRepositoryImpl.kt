@@ -16,8 +16,8 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val firebaseAuth: FirebaseAuth,
-    private val firestore: FirebaseFirestore,
+    private val firebaseAuth: FirebaseAuth?,
+    private val firestore: FirebaseFirestore?,
     private val userDao: UserDao
 ) : AuthRepository {
 
@@ -28,6 +28,9 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun login(email: String, password: String): Result<User> {
+        if (firebaseAuth == null || firestore == null) {
+            return Result.failure(Exception("Firebase no está configurado (falta google-services.json)"))
+        }
         return try {
             // Autenticar con Firebase
             val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
@@ -53,6 +56,9 @@ class AuthRepositoryImpl @Inject constructor(
         password: String,
         fullName: String
     ): Result<User> {
+        if (firebaseAuth == null || firestore == null) {
+            return Result.failure(Exception("Firebase no está configurado (falta google-services.json)"))
+        }
         return try {
             // Crear usuario en Firebase Auth
             val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
@@ -84,7 +90,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun logout(): Result<Unit> {
         return try {
-            firebaseAuth.signOut()
+            firebaseAuth?.signOut()
             userDao.clearAllUsers()
             Result.success(Unit)
         } catch (e: Exception) {
@@ -93,10 +99,13 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun isAuthenticated(): Boolean {
-        return firebaseAuth.currentUser != null
+        return firebaseAuth?.currentUser != null
     }
 
     override suspend fun updateProfile(user: User): Result<Unit> {
+        if (firebaseAuth == null || firestore == null) {
+            return Result.failure(Exception("Firebase no está configurado (falta google-services.json)"))
+        }
         return try {
             val currentUser = firebaseAuth.currentUser
                 ?: return Result.failure(Exception("No hay usuario logueado"))

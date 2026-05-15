@@ -14,7 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.horarioapp.core.ui.components.BrandOrange
+import com.example.horarioapp.core.ui.theme.BrandOrange
 
 @Composable
 fun AppBottomNavigation(navController: NavHostController) {

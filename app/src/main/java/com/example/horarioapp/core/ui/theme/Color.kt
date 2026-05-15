@@ -1,4 +1,4 @@
-package com.example.horarioapp.core.ui.components
+package com.example.horarioapp.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

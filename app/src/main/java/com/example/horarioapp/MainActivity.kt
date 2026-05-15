@@ -9,7 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.horarioapp.core.navigation.AppNavGraph
-import com.example.horarioapp.core.ui.components.HorarioAppTheme
+import com.example.horarioapp.core.ui.theme.HorarioAppTheme
 
 import dagger.hilt.android.AndroidEntryPoint
 

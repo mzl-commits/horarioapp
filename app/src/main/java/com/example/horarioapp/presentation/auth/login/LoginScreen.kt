@@ -21,7 +21,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.horarioapp.core.ui.components.BrandOrange
+import com.example.horarioapp.core.ui.theme.BrandOrange
 
 @Composable
 fun LoginScreen(

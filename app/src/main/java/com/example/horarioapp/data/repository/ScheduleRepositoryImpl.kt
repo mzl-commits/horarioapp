@@ -15,7 +15,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class ScheduleRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore,
+    private val firestore: FirebaseFirestore?,
     private val scheduleDao: ScheduleDao
 ) : ScheduleRepository {
 
@@ -46,29 +46,31 @@ class ScheduleRepositoryImpl @Inject constructor(
             val scheduleEntity = schedule.toScheduleEntity()
             scheduleDao.insertSchedule(scheduleEntity)
 
-            // Guardar en Firebase de forma asíncrona (sin bloquear)
-            try {
-                firestore.collection("schedules").document(schedule.id).set(
-                    mapOf(
-                        "id" to schedule.id,
-                        "subject" to schedule.subject,
-                        "professor" to schedule.professor,
-                        "classroom" to schedule.classroom,
-                        "dayOfWeek" to schedule.dayOfWeek,
-                        "startTime" to schedule.startTime,
-                        "endTime" to schedule.endTime,
-                        "color" to schedule.color,
-                        "userId" to schedule.userId,
-                        "createdAt" to System.currentTimeMillis(),
-                        "updatedAt" to System.currentTimeMillis()
-                    )
-                ).await()
+            // Guardar en Firebase de forma asíncrona si está disponible
+            if (firestore != null) {
+                try {
+                    firestore.collection("schedules").document(schedule.id).set(
+                        mapOf(
+                            "id" to schedule.id,
+                            "subject" to schedule.subject,
+                            "professor" to schedule.professor,
+                            "classroom" to schedule.classroom,
+                            "dayOfWeek" to schedule.dayOfWeek,
+                            "startTime" to schedule.startTime,
+                            "endTime" to schedule.endTime,
+                            "color" to schedule.color,
+                            "userId" to schedule.userId,
+                            "createdAt" to System.currentTimeMillis(),
+                            "updatedAt" to System.currentTimeMillis()
+                        )
+                    ).await()
 
-                // Marcar como sincronizado
-                scheduleDao.markAsSynced(schedule.id)
-            } catch (e: Exception) {
-                // Si falla Firebase, quedará guardado en Room y se sincronizará después
-                println("Error sincronizando con Firebase: ${e.message}")
+                    // Marcar como sincronizado
+                    scheduleDao.markAsSynced(schedule.id)
+                } catch (e: Exception) {
+                    // Si falla Firebase, quedará guardado en Room y se sincronizará después
+                    println("Error sincronizando con Firebase: ${e.message}")
+                }
             }
 
             Result.success(schedule.id)
@@ -82,27 +84,29 @@ class ScheduleRepositoryImpl @Inject constructor(
             val scheduleEntity = schedule.toScheduleEntity().copy(isSyncedWithServer = false)
             scheduleDao.updateSchedule(scheduleEntity)
 
-            // Actualizar en Firebase
-            try {
-                firestore.collection("schedules").document(schedule.id).set(
-                    mapOf(
-                        "id" to schedule.id,
-                        "subject" to schedule.subject,
-                        "professor" to schedule.professor,
-                        "classroom" to schedule.classroom,
-                        "dayOfWeek" to schedule.dayOfWeek,
-                        "startTime" to schedule.startTime,
-                        "endTime" to schedule.endTime,
-                        "color" to schedule.color,
-                        "userId" to schedule.userId,
-                        "updatedAt" to System.currentTimeMillis()
-                    ),
-                    com.google.firebase.firestore.SetOptions.merge()
-                ).await()
+            // Actualizar en Firebase si está disponible
+            if (firestore != null) {
+                try {
+                    firestore.collection("schedules").document(schedule.id).set(
+                        mapOf(
+                            "id" to schedule.id,
+                            "subject" to schedule.subject,
+                            "professor" to schedule.professor,
+                            "classroom" to schedule.classroom,
+                            "dayOfWeek" to schedule.dayOfWeek,
+                            "startTime" to schedule.startTime,
+                            "endTime" to schedule.endTime,
+                            "color" to schedule.color,
+                            "userId" to schedule.userId,
+                            "updatedAt" to System.currentTimeMillis()
+                        ),
+                        com.google.firebase.firestore.SetOptions.merge()
+                    ).await()
 
-                scheduleDao.markAsSynced(schedule.id)
-            } catch (e: Exception) {
-                println("Error sincronizando con Firebase: ${e.message}")
+                    scheduleDao.markAsSynced(schedule.id)
+                } catch (e: Exception) {
+                    println("Error sincronizando con Firebase: ${e.message}")
+                }
             }
 
             Result.success(Unit)
@@ -115,11 +119,13 @@ class ScheduleRepositoryImpl @Inject constructor(
         return try {
             scheduleDao.deleteScheduleById(scheduleId)
 
-            // Eliminar de Firebase
-            try {
-                firestore.collection("schedules").document(scheduleId).delete().await()
-            } catch (e: Exception) {
-                println("Error eliminando de Firebase: ${e.message}")
+            // Eliminar de Firebase si está disponible
+            if (firestore != null) {
+                try {
+                    firestore.collection("schedules").document(scheduleId).delete().await()
+                } catch (e: Exception) {
+                    println("Error eliminando de Firebase: ${e.message}")
+                }
             }
 
             Result.success(Unit)
@@ -129,6 +135,9 @@ class ScheduleRepositoryImpl @Inject constructor(
     }
 
     override suspend fun syncSchedules(userId: String): Result<Unit> {
+        if (firestore == null) {
+            return Result.failure(Exception("Firebase no está configurado"))
+        }
         return try {
             // Descargar horarios desde Firebase
             val snapshot = firestore.collection("schedules")
