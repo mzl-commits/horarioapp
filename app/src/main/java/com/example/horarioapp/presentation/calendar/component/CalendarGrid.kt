@@ -2,7 +2,13 @@ package com.example.horarioapp.presentation.calendar.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,31 +22,37 @@ import androidx.compose.ui.unit.sp
 import com.example.horarioapp.core.ui.theme.BrandDarkBlue
 
 @Composable
-fun CalendarGrid() {
+fun CalendarGrid(
+    selectedDay: Int,
+    onDaySelected: (Int) -> Unit
+) {
+    val days = listOf("Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom")
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        DayItem("Lun", "12", false)
-        DayItem("Mar", "13", false)
-        DayItem("Mié", "14", true)
-        DayItem("Jue", "15", false)
-        DayItem("Vie", "16", false)
-        DayItem("Sáb", "17", false)
+        days.forEachIndexed { index, day ->
+            DayItem(
+                dayName = day,
+                isSelected = selectedDay == index,
+                onClick = { onDaySelected(index) }
+            )
+        }
     }
 }
 
 @Composable
-private fun DayItem(dayName: String, dayNumber: String, isSelected: Boolean) {
+private fun DayItem(dayName: String, isSelected: Boolean, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
             .background(if (isSelected) BrandDarkBlue else Color.Transparent)
-            .padding(horizontal = 12.dp, vertical = 8.dp)
-            .clickable { }
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 10.dp)
     ) {
         Text(
             text = dayName,
@@ -50,9 +62,9 @@ private fun DayItem(dayName: String, dayNumber: String, isSelected: Boolean) {
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = dayNumber,
-            color = if (isSelected) Color.White else Color.Black,
-            fontSize = 16.sp,
+            text = if (isSelected) "Hoy" else "",
+            color = if (isSelected) Color.White else Color.Transparent,
+            fontSize = 11.sp,
             fontWeight = FontWeight.Bold
         )
     }

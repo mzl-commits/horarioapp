@@ -9,7 +9,7 @@ sealed class AddScheduleEvent {
     data class OnStartTimeChange(val time: String) : AddScheduleEvent()
     data class OnEndTimeChange(val time: String) : AddScheduleEvent()
     data class OnColorSelected(val color: String) : AddScheduleEvent()
-    data class OnAddSchedule(val userId: String) : AddScheduleEvent()
+    object OnAddSchedule : AddScheduleEvent()
     object OnDismissError : AddScheduleEvent()
     object OnDismissSuccess : AddScheduleEvent()
     object OnToggleColorPicker : AddScheduleEvent()

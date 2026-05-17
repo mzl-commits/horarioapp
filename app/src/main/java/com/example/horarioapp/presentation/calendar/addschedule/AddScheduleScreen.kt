@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -32,12 +33,15 @@ import com.example.horarioapp.core.ui.theme.TextSecondary
 
 @Composable
 fun AddScheduleScreen(
-    userId: String,
     onNavigateBack: () -> Unit,
     onScheduleAdded: () -> Unit,
     viewModel: AddScheduleViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(state.successMessage) {
+        if (state.successMessage != null) onScheduleAdded()
+    }
 
     Column(
         modifier = Modifier
@@ -285,7 +289,7 @@ fun AddScheduleScreen(
 
             AppButton(
                 text = "Guardar",
-                onClick = { viewModel.onEvent(AddScheduleEvent.OnAddSchedule(userId)) },
+                onClick = { viewModel.onEvent(AddScheduleEvent.OnAddSchedule) },
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),

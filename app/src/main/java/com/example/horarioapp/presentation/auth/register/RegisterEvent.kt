@@ -1,4 +1,9 @@
 package com.example.horarioapp.presentation.auth.register
 
-class RegisterEvent {
+sealed class RegisterEvent {
+    data class OnFullNameChange(val fullName: String) : RegisterEvent()
+    data class OnEmailChange(val email: String) : RegisterEvent()
+    data class OnPasswordChange(val password: String) : RegisterEvent()
+    data class OnConfirmPasswordChange(val confirmPassword: String) : RegisterEvent()
+    data object OnRegisterClick : RegisterEvent()
 }

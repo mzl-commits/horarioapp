@@ -13,6 +13,7 @@ import com.example.horarioapp.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import java.util.UUID
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -29,7 +30,9 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun login(email: String, password: String): Result<User> {
         if (firebaseAuth == null || firestore == null) {
-            return Result.failure(Exception("Firebase no está configurado (falta google-services.json)"))
+            val localUser = userDao.getUserByEmail(email)
+                ?: return Result.failure(Exception("Usuario local no encontrado. Regístrate primero o configura Firebase."))
+            return Result.success(localUser.toUser())
         }
         return try {
             // Autenticar con Firebase
@@ -57,7 +60,13 @@ class AuthRepositoryImpl @Inject constructor(
         fullName: String
     ): Result<User> {
         if (firebaseAuth == null || firestore == null) {
-            return Result.failure(Exception("Firebase no está configurado (falta google-services.json)"))
+            val userEntity = UserDto(
+                uid = UUID.randomUUID().toString(),
+                email = email,
+                fullName = fullName
+            ).toUserEntity()
+            userDao.insertUser(userEntity)
+            return Result.success(userEntity.toUser())
         }
         return try {
             // Crear usuario en Firebase Auth

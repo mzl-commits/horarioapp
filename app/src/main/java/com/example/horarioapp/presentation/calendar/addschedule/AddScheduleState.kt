@@ -1,6 +1,7 @@
 package com.example.horarioapp.presentation.calendar.addschedule
 
 data class AddScheduleState(
+    val userId: String = "",
     val subject: String = "",
     val professor: String = "",
     val classroom: String = "",

@@ -4,6 +4,7 @@ package com.example.horarioapp.presentation.calendar.addschedule
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.horarioapp.domain.model.Schedule
+import com.example.horarioapp.domain.repository.AuthRepository
 import com.example.horarioapp.domain.usecase.schedule.AddScheduleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,11 +16,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddScheduleViewModel @Inject constructor(
-    private val addScheduleUseCase: AddScheduleUseCase
+    private val addScheduleUseCase: AddScheduleUseCase,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddScheduleState())
     val state: StateFlow<AddScheduleState> = _state.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            authRepository.getCurrentUser().collect { user ->
+                _state.value = _state.value.copy(userId = user?.uid.orEmpty())
+            }
+        }
+    }
 
     fun onEvent(event: AddScheduleEvent) {
         when (event) {
@@ -65,8 +75,8 @@ class AddScheduleViewModel @Inject constructor(
                     showColorPicker = false
                 )
             }
-            is AddScheduleEvent.OnAddSchedule -> {
-                addSchedule(event.userId)
+            AddScheduleEvent.OnAddSchedule -> {
+                addSchedule()
             }
             is AddScheduleEvent.OnDismissError -> {
                 _state.value = _state.value.copy(error = null)
@@ -97,7 +107,7 @@ class AddScheduleViewModel @Inject constructor(
         }
     }
 
-    private fun addSchedule(userId: String) {
+    private fun addSchedule() {
         val currentState = _state.value
 
         // Validación
@@ -114,6 +124,10 @@ class AddScheduleViewModel @Inject constructor(
         }
         if (currentState.classroom.isBlank()) {
             newState = newState.copy(classroomError = "El aula es requerida")
+            hasError = true
+        }
+        if (currentState.userId.isBlank()) {
+            newState = newState.copy(error = "No hay usuario activo para guardar el horario")
             hasError = true
         }
 
@@ -134,7 +148,7 @@ class AddScheduleViewModel @Inject constructor(
                 startTime = currentState.startTime,
                 endTime = currentState.endTime,
                 color = currentState.selectedColor,
-                userId = userId
+                userId = currentState.userId
             )
 
             val result = addScheduleUseCase(schedule)
@@ -145,7 +159,6 @@ class AddScheduleViewModel @Inject constructor(
                     successMessage = "Horario agregado correctamente"
                 )
                 // Reset form después de éxito
-                _state.value = AddScheduleState()
             }.onFailure { exception ->
                 _state.value = _state.value.copy(
                     isLoading = false,
